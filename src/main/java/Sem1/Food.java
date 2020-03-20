@@ -19,4 +19,10 @@ public class Food implements Serializable {
         return nutritious;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        Food f = (Food)obj;
+        boolean result = this.name.equals(f.name) && this.nutritious == f.nutritious;
+        return  result;
+    }
 }
