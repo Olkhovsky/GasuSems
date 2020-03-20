@@ -1,5 +1,6 @@
 package Sem1;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -19,24 +20,11 @@ public class Program {
         list.add(apple);
         Animal cat = new Animal(AnimalType.Walking, "Boris", 1, list);
 
-        Path path = Paths.get("object.bin");
-        try (ObjectOutputStream outputStream =
-                     new ObjectOutputStream(Files.newOutputStream(path))) {
-            outputStream.writeObject(cat);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Animal newCat = null;
-        try (ObjectInputStream inputStream =
-                     new ObjectInputStream(Files.newInputStream(path))) {
-            newCat = (Animal) inputStream.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(newCat.getName() + " can eat " + newCat.Eats());
+        DataSerializer serializer = new DataSerializer();
+        String path = serializer.Serialize(cat);
+        cat = serializer.Deserialize(path);
+        System.out.println(cat.Eats());
     }
+
+
 }

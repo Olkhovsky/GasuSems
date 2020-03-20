@@ -17,6 +17,7 @@ public class Animal implements Serializable {
         this.canEat = canEat;
     }
 
+
     public AnimalType getType() {
         return type;
     }
@@ -31,9 +32,14 @@ public class Animal implements Serializable {
 
     public String Eats() {
         String result = "";
-        for (Food food : canEat) {
+        for (Food food : getCanEat()) {
             result += food.getName() + ", ";
         }
         return  result.substring(0, result.length() - 2);
     }
+
+    public List<Food> getCanEat() {
+        return canEat;
+    }
+
 }
