@@ -13,6 +13,7 @@ public class DataSerializer implements Serializer {
             dos.writeUTF(animal.getName());
             dos.writeInt(animal.getAge());
             dos.writeUTF(animal.getType().toString());
+            dos.writeInt(animal.getCanEat().size());
             for (Food food : animal.getCanEat()) {
                dos.writeInt(food.getNutritious());
                dos.writeUTF(food.getName());
@@ -34,14 +35,12 @@ public class DataSerializer implements Serializer {
             int age = dos.readInt();
             AnimalType type = AnimalType.valueOf(dos.readUTF());
             List<Food> list = new ArrayList<>();
-            try {
-                while (true) {
-                    Integer nutritious = dos.readInt();
-                    String fName = dos.readUTF();
-                    list.add(new Food(fName, nutritious));
-                }
+            int arraySize = dos.readInt();
+            for (int i = 0; i < arraySize; i++) {
+                Integer nutritious = dos.readInt();
+                String fName = dos.readUTF();
+                list.add(new Food(fName, nutritious));
             }
-            catch (Exception e) {}
             animal = new Animal(type, name, age, list);
         }
         catch(IOException ex){
