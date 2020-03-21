@@ -7,8 +7,7 @@ import java.util.List;
 
 public class DataSerializer implements Serializer {
     @Override
-    public String Serialize(Animal animal) {
-        String path = "data.bin";
+    public String Serialize(Animal animal, String path) {
         try(DataOutputStream dos = new DataOutputStream(new FileOutputStream(path)))
         {
             dos.writeUTF(animal.getName());

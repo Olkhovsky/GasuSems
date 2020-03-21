@@ -42,4 +42,11 @@ public class Animal implements Serializable {
         return canEat;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        Animal a = (Animal) obj;
+        boolean result = name.equals(a.name) && type.equals(a.getType())
+                && age == a.getAge() && canEat.equals(a.getCanEat());
+        return  result;
+    }
 }

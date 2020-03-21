@@ -9,10 +9,10 @@ import java.nio.file.Paths;
 
 public class ObjectSerializer implements Serializer {
     @Override
-    public String Serialize(Animal animal) {
-        Path path = Paths.get("object.bin");
+    public String Serialize(Animal animal, String path) {
+        Path _path = Paths.get(path);
         try (ObjectOutputStream outputStream =
-                     new ObjectOutputStream(Files.newOutputStream(path))) {
+                     new ObjectOutputStream(Files.newOutputStream(_path))) {
             outputStream.writeObject(animal);
         } catch (IOException e) {
             e.printStackTrace();
