@@ -1,26 +1,25 @@
 package Sem2;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Singleton implements Comparable<Singleton> {
-    private static boolean isExist;
-    private static Object lock = new Object();
-
+public class Singleton {
+    private static AtomicBoolean isExist = new AtomicBoolean(false);
+    private static AtomicInteger idCounter = new AtomicInteger(0);
+    private int id;
     private Singleton() {
-        isExist = true;
-
+        isExist.set(true);
+        id =  idCounter.get();
+        idCounter.set(id + 1);
     }
 
     public static Singleton Create() {
-        synchronized (lock) {
-            if (isExist)
+            if (isExist.get())
                 return null;
             return new Singleton();
-        }
     }
 
-    @Override
-    public int compareTo(Singleton singleton) {
-        return 0;
+    public int GetId() {
+        return id;
     }
 }
