@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 public class SingletonTest {
     @Test
     public void OneHundredTimesBefore() throws InterruptedException {
-        int threadsSize = 10000;
+        int threadsSize = 1000;
         ExecutorService executor = Executors.newFixedThreadPool(threadsSize);
         ConcurrentSkipListSet<Integer> ids = new ConcurrentSkipListSet<>();
         CountDownLatch start = new CountDownLatch(threadsSize);
