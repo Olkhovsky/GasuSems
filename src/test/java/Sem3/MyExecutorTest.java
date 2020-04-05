@@ -34,4 +34,54 @@ public class MyExecutorTest  {
         }
         Assert.assertEquals(0, latch.getCount());
     }
+
+    @Test
+    public void more_n_tasks_chek() {
+        int pool = 5;
+        int threads = 15;
+
+        MyExecutor executor = new MyExecutor(pool);
+        CountDownLatch latch = new CountDownLatch(threads);
+        Object obj = new Object();
+
+        for (int i = 0; i < threads; i++) {
+            executor.execute(() -> {
+                latch.countDown();
+
+                //после проверки того, что экзекютор не превышает pool задач, на больше не нужно останавливать потоки
+                if (latch.getCount() < threads - pool)
+                    return;
+
+                //останавливаем первые 5 потоков, чтобы убедится, что экзекютор не выполняет больше задач
+                synchronized (obj) {
+                    try {
+                        obj.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //проверяем, что пул задач непревышен
+        Assert.assertEquals(threads - pool,  latch.getCount());
+        synchronized (obj) {
+            //позваляем первым 5 потокам завершиться
+            obj.notify();
+        }
+
+        try {
+            latch.await(2000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        Assert.assertEquals(0, latch.getCount());
+    }
 }
