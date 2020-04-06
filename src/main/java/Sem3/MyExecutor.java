@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MyExecutor implements Executor {
     PriorityBlockingQueue<Runnable> queue = new PriorityBlockingQueue(1, new RunComparator());
     private int poolSize;
+    private AtomicInteger thredsWaiting = new AtomicInteger(0);
     private int threads = 0;
 
     public MyExecutor(int poolSize) {
@@ -16,8 +17,13 @@ public class MyExecutor implements Executor {
 
     @Override
     public void execute(Runnable runnable) {
-        queue.add(runnable);
-        CreateThread();
+        if (thredsWaiting.get() > 0) {
+            thredsWaiting.getAndDecrement();
+            queue.add(runnable);
+        } else {
+            queue.add(runnable);
+            CreateThread();
+        }
     }
 
     private void CreateThread() {
@@ -32,6 +38,7 @@ public class MyExecutor implements Executor {
             try {
                 Runnable task = queue.take();
                 task.run();
+                thredsWaiting.getAndIncrement();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
