@@ -6,42 +6,32 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MyExecutor implements Executor {
-    PriorityBlockingQueue<Thread> queue = new PriorityBlockingQueue(1, new ThreadComparator());
+    PriorityBlockingQueue<Runnable> queue = new PriorityBlockingQueue(1, new RunComparator());
     private int poolSize;
-    private Thread executorThread;
-    private AtomicInteger threads = new AtomicInteger(0);
-    Object syncObject;
+    private int threads = 0;
 
     public MyExecutor(int poolSize) {
         this.poolSize = poolSize;
-        syncObject = new Object();
-        executorThread = new Thread(() -> Process());
-        executorThread.start();
     }
 
     @Override
     public void execute(Runnable runnable) {
-        Thread thread = CreateThread(runnable);
-        queue.add(thread);
+        queue.add(runnable);
+        CreateThread();
     }
 
-    private Thread CreateThread(Runnable runnable) {
-        return new Thread(() -> {
-            runnable.run();
-            threads.getAndDecrement();
-            synchronized(syncObject) {
-                syncObject.notify();
-            }
-        });
+    private void CreateThread() {
+        if (threads >= poolSize)
+            return;
+        threads++;
+        new Thread(() -> Process()).start();
     }
 
     private void Process() {
         while (true) {
             try {
-                CheckThreads();
-                Thread thread = queue.take();
-                threads.getAndIncrement();
-                thread.start();
+                Runnable task = queue.take();
+                task.run();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -49,22 +39,11 @@ public class MyExecutor implements Executor {
         }
     }
 
-    private void CheckThreads() {
-        synchronized (syncObject) {
-            while (threads.get() >= poolSize) {
-                try {
-                    syncObject.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }
 
-class ThreadComparator implements Comparator<Thread> {
+class RunComparator implements Comparator<Runnable> {
     @Override
-    public int compare(Thread t1, Thread t2) {
+    public int compare(Runnable t1, Runnable t2) {
         return 0;
     }
 }

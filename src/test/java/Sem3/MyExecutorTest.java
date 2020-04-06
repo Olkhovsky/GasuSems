@@ -81,7 +81,7 @@ public class MyExecutorTest  {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+
         Assert.assertEquals(0, latch.getCount());
     }
 }
